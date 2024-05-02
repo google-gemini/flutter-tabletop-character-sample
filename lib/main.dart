@@ -305,7 +305,44 @@ class _ChatWidgetState extends State<ChatWidget> {
   }
 
   Widget _buildErrorDisplay(BuildContext context) {
-    return const Center(child: Text('Error'));
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 32),
+          Center(
+            child: Text(
+              'Well, shoot.',
+              style: theme.textTheme.titleLarge,
+            ),
+          ),
+          const SizedBox(height: 32),
+          Text(
+            'Something has gone wrong. Double check your network '
+            'connection and API key, and then give it another try!',
+            style: theme.textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 32),
+          Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  characterResponse = null;
+                  nameController.clear();
+                  descriptionController.clear();
+                });
+              },
+              child: const Text('Try again'),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildThinkingIndicator(BuildContext context) {
@@ -381,54 +418,31 @@ class CharacterService {
   }
 
   Future<Character> generateCharacter(String name, String description) async {
-    final prompt = [
-      Content.multi([
-        TextPart(nameExample1),
-        TextPart(descriptionExample1),
-        TextPart(responseExample1),
-        TextPart(nameExample2),
-        TextPart(descriptionExample2),
-        TextPart(responseExample2),
-        TextPart(name),
-        TextPart(description),
-      ]),
-    ];
+    final prompt = createPrompt(name, description);
 
-    try {
-      final response = await model.generateContent(
-        prompt,
-        safetySettings: safetySettings,
-        generationConfig: generationConfig,
-      );
+    int count = 0;
 
-      debugPrint(response.text);
+    while (count < 3) {
+      try {
+        final response = await model.generateContent(
+          [prompt],
+          safetySettings: safetySettings,
+          generationConfig: generationConfig,
+        );
 
-      final json = jsonDecode(response.text!);
-      final character = Character.fromJson(json);
-      return character;
-    } catch (ex) {
-      debugPrint(ex.toString());
-      throw 'Whoops!';
+        debugPrint(response.text);
+
+        final json = jsonDecode(response.text!);
+        final character = Character.fromJson(json);
+        return character;
+      } catch (ex) {
+        debugPrint(ex.toString());
+      }
+
+      count++;
     }
 
-    // return Future.delayed(
-    //   const Duration(seconds: 2),
-    //   () => const Character(
-    //     name: 'Andrew',
-    //     appearance: Appearance(
-    //       age: '47',
-    //       height: '6\'1"',
-    //       weight: '200',
-    //       build: 'Thick',
-    //       eyes: 'Hazel',
-    //       hair: 'Red as the sunset, baby',
-    //     ),
-    //     clothing: 'T-shirt and cargo shorts',
-    //     personality: 'Utterly hilarious',
-    //     accessories: 'Why would this fine specimen need accessorizing?',
-    //     roleInGame: 'He\'s a lovable scamp',
-    //   ),
-    // );
+    throw 'Could not parse response after three tries.';
   }
 }
 
@@ -484,15 +498,14 @@ class Character {
         roleInGame = json['roleInGame'] ?? '';
 }
 
-const nameExample1 = '''
-Elara
-''';
-
-const descriptionExample1 = '''
-The Village Herbalist
-''';
-
-const responseExample1 = '''
+const example1 = '''
+<user>
+{
+ "name": "Elara",
+  "description": "The Village Herbalist"
+}
+</user>
+<model>
 {
   "name": "Elara",
   "appearance": {
@@ -508,17 +521,17 @@ const responseExample1 = '''
   "personality": "Elara possesses a deep love for all living things and is always willing to lend a hand or offer a calming word. Years of studying the natural world have granted her extensive knowledge of plants, their medicinal properties, and the delicate balance of the ecosystem. Elara is self-sufficient and comfortable living a simple life close to nature.  She is a skilled herbalist, gardener, and forager, able to utilize the gifts of the land to provide for herself and others. She feels a strong connection to the earth and the magical energy that flows through it.  She often incorporates folklore and ancient rituals into her herbal practice.",
   "roleInGame": "Players can visit Elara to purchase healing remedies, salves, and teas crafted from her garden. Elara may ask the player to help her gather rare herbs, protect sacred natural sites, or even assist with local wildlife. Through conversations, she reveals snippets of local history, folklore, and wisdom about the interconnectedness of all things. Elara's gentle wisdom and deep connection to nature can offer the player guidance and perspective when making difficult choices."
 }
+</model>
 ''';
 
-const nameExample2 = '''
-Lark
-''';
-
-const descriptionExample2 = '''
-The Wandering Bard
-''';
-
-const responseExample2 = '''
+const example2 = '''
+<user>
+{
+ "name": "Lark",
+  "description": "The Wandering Bard"
+}
+</user>
+<model>
 {
   "name": "Lark",
   "appearance": {
@@ -533,5 +546,37 @@ const responseExample2 = '''
   "accessories": "Lark always carries their trusty lute, often decorated with carvings and colorful ribbons. They might have an assortment of small instruments tucked into their belt, such as a flute or a set of panpipes.  Their ears may be adorned with several earrings, and their fingers with rings collected from different regions.",
   "personality": "Lark is a restless soul, always seeking new experiences and stories to tell.  They have a deep love for travel and a thirst for knowledge about the world and its diverse cultures. Music is Lark's lifeblood, and they possess a natural talent for playing instruments and composing songs. Their performances are often infused with a touch of magic, reflecting the emotions and tales woven into their music. Lark is a gifted storyteller with a knack for captivating their audience.  They can easily make friends wherever they go and have a talent for bringing people together. Through their travels, Lark has developed a keen understanding of human nature and the interconnectedness of the world. They can offer unique perspectives and hidden truths through their songs and stories.",
   "roleInGame": "Lark wanders the realm, sharing their music and stories with the villages and towns they pass through. Players might encounter them performing in taverns, market squares, or even around a campfire in the wilderness. Lark's travels may lead them to uncover secrets or discover places of interest. They could offer quests to the player that involve retrieving a lost instrument, composing a song for a specific purpose, or helping a community in need. Lark's songs and tales offer glimpses into the broader world beyond the player's immediate surroundings. They may share news of distant lands, historical events, or even rumors of mythical creatures and hidden treasures. Lark's free spirit and optimistic outlook can offer encouragement and a fresh perspective to the player.  Their music might even have magical qualities, providing buffs or enhancing abilities."
+}
+</model>
+''';
+
+Content createPrompt(String name, String description) {
+  return Content.multi([
+    TextPart('Write a side character design in a cottage core game set in a '
+        'fantasy realm. Examples:'),
+    TextPart(example1),
+    TextPart(example2),
+    TextPart('Only return valid JSON adhering to the following schema:'),
+    TextPart(outputSchema),
+    TextPart('Generate a a new character named "$name" with the following '
+        'description "$description".'),
+  ]);
+}
+
+const outputSchema = '''
+{
+  "name": String,
+  "appearance": {
+    "age":  String,
+    "height": String,
+    "weight": String,
+    "build": String
+    "hair": String,
+    "eyes": String
+  },
+  "clothing": String,
+  "accessories": String,
+  "personality": String
+  "roleInGame": String
 }
 ''';
