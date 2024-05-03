@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:url_launcher/link.dart';
 
+import 'theme.dart';
+import 'util.dart';
+
 void main() {
   runApp(const GenerativeAISample());
 }
@@ -17,12 +20,13 @@ class GenerativeAISample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextTheme textTheme = createTextTheme(context, "Cousine", "Grenze Gotisch");
+    MaterialTheme theme = MaterialTheme(textTheme);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Character Generator',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-      ),
+      theme: theme.light(),
       home: const ChatScreen(title: 'Character Generator'),
     );
   }
@@ -44,7 +48,8 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title:
+            Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
       ),
       body: switch (apiKey) {
         final providedKey? => ChatWidget(apiKey: providedKey),
@@ -70,10 +75,13 @@ class ApiKeyWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'To use the Gemini API, you\'ll need an API key. '
-              'If you don\'t already have one, '
-              'create a key in Google AI Studio.',
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'To use the Gemini API, you\'ll need an API key. '
+                'If you don\'t already have one, '
+                'create a key in Google AI Studio.',
+              ),
             ),
             const SizedBox(height: 8),
             Link(
@@ -99,7 +107,7 @@ class ApiKeyWidget extends StatelessWidget {
                       },
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(width: 16),
                   TextButton(
                     onPressed: () {
                       onSubmitted(_textController.value.text);
@@ -128,8 +136,10 @@ class ChatWidget extends StatefulWidget {
 class _ChatWidgetState extends State<ChatWidget> {
   Future<Character>? characterResponse;
   late final CharacterService service;
-  final nameController = TextEditingController();
   final descriptionController = TextEditingController();
+  final roleController = TextEditingController();
+  final personalityController = TextEditingController();
+  final backgroundController = TextEditingController();
 
   @override
   void initState() {
@@ -146,27 +156,56 @@ class _ChatWidgetState extends State<ChatWidget> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Blah, blah'),
+          const Text('Create additional NPCs for your group to interact with '
+              'along their journey.'),
           const SizedBox(height: 32),
-          Text('Name', style: theme.textTheme.labelLarge),
-          const SizedBox(height: 8),
-          TextField(
-            controller: nameController,
-            decoration: textFieldDecoration(
-              context,
-              'Give your character a name',
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text('Description', style: theme.textTheme.labelLarge),
+          Text('Describe the setting for your campaign',
+              style: theme.textTheme.labelLarge),
           const SizedBox(height: 8),
           TextField(
             controller: descriptionController,
-            maxLines: 5,
-            minLines: 5,
             decoration: textFieldDecoration(
               context,
-              'Describe your character in a few sentences.',
+              'In a far away land...',
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Suggest a role for this NPC',
+            style: theme.textTheme.labelLarge,
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: roleController,
+            decoration: textFieldDecoration(
+              context,
+              'A friendly tavern-keeper...',
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Describe their personality',
+            style: theme.textTheme.labelLarge,
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: personalityController,
+            decoration: textFieldDecoration(
+              context,
+              'Friendly, but aloof...',
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Where did they come from? What\'s their background?',
+            style: theme.textTheme.labelLarge,
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: backgroundController,
+            decoration: textFieldDecoration(
+              context,
+              'Raised on a dragon farm...',
             ),
           ),
           const SizedBox(height: 16),
@@ -177,7 +216,10 @@ class _ChatWidgetState extends State<ChatWidget> {
               onPressed: () {
                 setState(() {
                   characterResponse = service.generateCharacter(
-                      nameController.text, descriptionController.text);
+                      descriptionController.text,
+                      personalityController.text,
+                      roleController.text,
+                      backgroundController.text);
                 });
               },
             ),
@@ -197,25 +239,20 @@ class _ChatWidgetState extends State<ChatWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Center(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(),
-              ),
+            child: Image.asset(
+              'assets/images/avatar.png',
               width: 300,
-              height: 150,
-              child: const Placeholder(),
             ),
           ),
           const SizedBox(height: 32),
           Text(
             character.name,
-            style: theme.textTheme.headlineLarge,
+            style: theme.textTheme.displayLarge,
           ),
           const SizedBox(height: 32),
           Text(
             'Appearance',
-            style: theme.textTheme.headlineSmall,
+            style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 16),
           Text(
@@ -250,7 +287,7 @@ class _ChatWidgetState extends State<ChatWidget> {
           const SizedBox(height: 16),
           Text(
             'Clothing',
-            style: theme.textTheme.headlineSmall,
+            style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 16),
           Text(
@@ -260,7 +297,7 @@ class _ChatWidgetState extends State<ChatWidget> {
           const SizedBox(height: 16),
           Text(
             'Accessories',
-            style: theme.textTheme.headlineSmall,
+            style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 16),
           Text(
@@ -270,7 +307,7 @@ class _ChatWidgetState extends State<ChatWidget> {
           const SizedBox(height: 16),
           Text(
             'Personality',
-            style: theme.textTheme.headlineSmall,
+            style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 16),
           Text(
@@ -280,7 +317,7 @@ class _ChatWidgetState extends State<ChatWidget> {
           const SizedBox(height: 16),
           Text(
             'Role',
-            style: theme.textTheme.headlineSmall,
+            style: theme.textTheme.titleSmall,
           ),
           const SizedBox(height: 16),
           Text(
@@ -296,7 +333,7 @@ class _ChatWidgetState extends State<ChatWidget> {
                   characterResponse = null;
                 });
               },
-              child: const Text('Create Another'),
+              child: const Text('Create another'),
             ),
           ),
         ],
@@ -333,7 +370,6 @@ class _ChatWidgetState extends State<ChatWidget> {
               onPressed: () {
                 setState(() {
                   characterResponse = null;
-                  nameController.clear();
                   descriptionController.clear();
                 });
               },
@@ -376,6 +412,7 @@ InputDecoration textFieldDecoration(BuildContext context, String hintText) =>
     InputDecoration(
       contentPadding: const EdgeInsets.all(15),
       hintText: hintText,
+      hintStyle: Theme.of(context).textTheme.labelLarge,
       border: OutlineInputBorder(
         borderRadius: const BorderRadius.all(
           Radius.circular(14),
@@ -417,8 +454,9 @@ class CharacterService {
     model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey);
   }
 
-  Future<Character> generateCharacter(String name, String description) async {
-    final prompt = createPrompt(name, description);
+  Future<Character> generateCharacter(String description, String role,
+      String personality, String background) async {
+    final prompt = createPrompt(description, role, personality, background);
 
     int count = 0;
 
@@ -429,8 +467,6 @@ class CharacterService {
           safetySettings: safetySettings,
           generationConfig: generationConfig,
         );
-
-        debugPrint(response.text);
 
         final json = jsonDecode(response.text!);
         final character = Character.fromJson(json);
@@ -501,8 +537,10 @@ class Character {
 const example1 = '''
 <user>
 {
- "name": "Elara",
-  "description": "The Village Herbalist"
+  "description": "Cozy cottage, whimsical, natural"
+  "personality": "Strong backbone, pragmatic, caring, wise and knowledgable"
+  "role": "The Village Herbalist"
+  "background": "Grew up exploring the forests of her home village. Lives in a secluded cottage which doubles as her alchemical workshop."
 }
 </user>
 <model>
@@ -527,8 +565,10 @@ const example1 = '''
 const example2 = '''
 <user>
 {
- "name": "Lark",
-  "description": "The Wandering Bard"
+  "description": "Magical Renaissance Faire"
+  "personality": "Entertaining, quick with a joke, adventurous"
+  "role": "The Wandering Bard"
+  "background": "A nomadic collector of magical musical instruments."
 }
 </user>
 <model>
@@ -536,8 +576,8 @@ const example2 = '''
   "name": "Lark",
   "appearance": {
     "age": "Early 20s, with a youthful appearance and a mischievous twinkle in their eyes.",
-    "height": "5'11\\"",
-    "weight": "155",
+    "height": "6'1\\"",
+    "weight": "180",
     "build": "Lark has a lithe and agile frame, well-suited to their nomadic lifestyle.",
     "hair": "Silver, like the moon.",
     "eyes": "Blue, like the sea."
@@ -550,16 +590,20 @@ const example2 = '''
 </model>
 ''';
 
-Content createPrompt(String name, String description) {
+Content createPrompt(
+    String description, String personality, String role, String background) {
   return Content.multi([
-    TextPart('Write a side character design in a cottage core game set in a '
+    TextPart('Write a side character design in a role-playing game set in a '
         'fantasy realm. Examples:'),
     TextPart(example1),
     TextPart(example2),
     TextPart('Only return valid JSON adhering to the following schema:'),
     TextPart(outputSchema),
-    TextPart('Generate a a new character named "$name" with the following '
-        'description "$description".'),
+    TextPart('Generate a new character with the following '
+        'description: "$description", '
+        'personality: "$personality", '
+        'role: "$role", and '
+        'background: "$background".'),
   ]);
 }
 
