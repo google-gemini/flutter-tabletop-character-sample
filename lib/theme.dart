@@ -1,3 +1,17 @@
+// Copyright 2024 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import "package:flutter/material.dart";
 
 class MaterialTheme {
@@ -359,18 +373,17 @@ class MaterialTheme {
     return theme(darkHighContrastScheme().toColorScheme());
   }
 
-
   ThemeData theme(ColorScheme colorScheme) => ThemeData(
-     useMaterial3: true,
-     brightness: colorScheme.brightness,
-     colorScheme: colorScheme,
-     textTheme: textTheme.apply(
-       bodyColor: colorScheme.onSurface,
-       displayColor: colorScheme.onSurface,
-     ),
-     scaffoldBackgroundColor: colorScheme.background,
-     canvasColor: colorScheme.surface,
-  );
+        useMaterial3: true,
+        brightness: colorScheme.brightness,
+        colorScheme: colorScheme,
+        textTheme: textTheme.apply(
+          bodyColor: colorScheme.onSurface,
+          displayColor: colorScheme.onSurface,
+        ),
+        scaffoldBackgroundColor: colorScheme.background,
+        canvasColor: colorScheme.surface,
+      );
 
   /// AI
   static const ai = ExtendedColor(
@@ -498,66 +511,65 @@ class MaterialTheme {
     ),
   );
 
-
   List<ExtendedColor> get extendedColors => [
-    ai,
-    muted,
-    aIComplement,
-  ];
+        ai,
+        muted,
+        aIComplement,
+      ];
 }
 
 class MaterialScheme {
   const MaterialScheme({
     required this.brightness,
-    required this.primary, 
-    required this.surfaceTint, 
-    required this.onPrimary, 
-    required this.primaryContainer, 
-    required this.onPrimaryContainer, 
-    required this.secondary, 
-    required this.onSecondary, 
-    required this.secondaryContainer, 
-    required this.onSecondaryContainer, 
-    required this.tertiary, 
-    required this.onTertiary, 
-    required this.tertiaryContainer, 
-    required this.onTertiaryContainer, 
-    required this.error, 
-    required this.onError, 
-    required this.errorContainer, 
-    required this.onErrorContainer, 
-    required this.background, 
-    required this.onBackground, 
-    required this.surface, 
-    required this.onSurface, 
-    required this.surfaceVariant, 
-    required this.onSurfaceVariant, 
-    required this.outline, 
-    required this.outlineVariant, 
-    required this.shadow, 
-    required this.scrim, 
-    required this.inverseSurface, 
-    required this.inverseOnSurface, 
-    required this.inversePrimary, 
-    required this.primaryFixed, 
-    required this.onPrimaryFixed, 
-    required this.primaryFixedDim, 
-    required this.onPrimaryFixedVariant, 
-    required this.secondaryFixed, 
-    required this.onSecondaryFixed, 
-    required this.secondaryFixedDim, 
-    required this.onSecondaryFixedVariant, 
-    required this.tertiaryFixed, 
-    required this.onTertiaryFixed, 
-    required this.tertiaryFixedDim, 
-    required this.onTertiaryFixedVariant, 
-    required this.surfaceDim, 
-    required this.surfaceBright, 
-    required this.surfaceContainerLowest, 
-    required this.surfaceContainerLow, 
-    required this.surfaceContainer, 
-    required this.surfaceContainerHigh, 
-    required this.surfaceContainerHighest, 
+    required this.primary,
+    required this.surfaceTint,
+    required this.onPrimary,
+    required this.primaryContainer,
+    required this.onPrimaryContainer,
+    required this.secondary,
+    required this.onSecondary,
+    required this.secondaryContainer,
+    required this.onSecondaryContainer,
+    required this.tertiary,
+    required this.onTertiary,
+    required this.tertiaryContainer,
+    required this.onTertiaryContainer,
+    required this.error,
+    required this.onError,
+    required this.errorContainer,
+    required this.onErrorContainer,
+    required this.background,
+    required this.onBackground,
+    required this.surface,
+    required this.onSurface,
+    required this.surfaceVariant,
+    required this.onSurfaceVariant,
+    required this.outline,
+    required this.outlineVariant,
+    required this.shadow,
+    required this.scrim,
+    required this.inverseSurface,
+    required this.inverseOnSurface,
+    required this.inversePrimary,
+    required this.primaryFixed,
+    required this.onPrimaryFixed,
+    required this.primaryFixedDim,
+    required this.onPrimaryFixedVariant,
+    required this.secondaryFixed,
+    required this.onSecondaryFixed,
+    required this.secondaryFixedDim,
+    required this.onSecondaryFixedVariant,
+    required this.tertiaryFixed,
+    required this.onTertiaryFixed,
+    required this.tertiaryFixedDim,
+    required this.onTertiaryFixedVariant,
+    required this.surfaceDim,
+    required this.surfaceBright,
+    required this.surfaceContainerLowest,
+    required this.surfaceContainerLow,
+    required this.surfaceContainer,
+    required this.surfaceContainerHigh,
+    required this.surfaceContainerHighest,
   });
 
   final Brightness brightness;

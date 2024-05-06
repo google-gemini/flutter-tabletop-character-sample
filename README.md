@@ -1,16 +1,10 @@
-# character_creator
+# Flutter Tabletop Tome Sample
 
-A new Flutter project.
+An open source sample for Flutter and Gemini that creates and displays
+profiles for non-player characters in role playing games based on a few simple
+inputs like "personality" and "background."
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+To use this sample, you'll need a Gemini API key. You can find instructions
+for generating one at https://ai.google.dev/.
