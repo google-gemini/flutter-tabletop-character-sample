@@ -9,7 +9,7 @@ inputs like "personality" and "background."
 To use this sample, you'll need a Gemini API key. You can find instructions
 for generating one at https://ai.google.dev/.
 
-Before running the project locally, recreate its platform-sepcific subprojects
+Before running the project locally, recreate its platform-specific subprojects
 with this command:
 
 ```bash
