@@ -5,12 +5,8 @@
     pkgs.jdk17
     pkgs.unzip
   ];
-  idx.workspace = {
-    onCreate = {
-      flutter-pub-get = "flutter pub get";
-    };
-  };
   idx.previews = {
+    enable = true;
     previews = {
       web = {
         command = [
